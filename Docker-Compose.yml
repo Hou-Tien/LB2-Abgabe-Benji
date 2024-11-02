@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Adminer - Web-Interface für die Verwaltung der MySQL-Datenbank
   adminer:
     image: adminer:latest
     ports:
@@ -8,7 +9,7 @@ services:
     networks:
       - webnet
 
-
+  # MySQL - Datenbank für das Speichern der Projektinformationen
   mysql:
     image: mysql:latest
     environment:
@@ -21,7 +22,7 @@ services:
     networks:
       - webnet
 
-
+  # Nginx - Webserver für HTTP-Anfragen
   nginx:
     image: nginx:latest
     ports:
@@ -29,6 +30,7 @@ services:
     networks:
       - webnet
 
+  # Node.js - API-Server
   api:
     image: node:latest
     ports:
