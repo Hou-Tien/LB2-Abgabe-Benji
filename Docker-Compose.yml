@@ -1,45 +1,49 @@
 version: '3.8'
 
 services:
-  # Adminer - Web-Interface für die Verwaltung der MySQL-Datenbank
+  # Nginx Webserver
+  webserver:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  # MySQL-Datenbank
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: testdb
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+  # Adminer zur Verwaltung der MySQL-Datenbank
   adminer:
     image: adminer:latest
     ports:
       - "8080:8080"
     networks:
-      - webnet
+      - app-network
+    depends_on:
+      - db
 
-  # MySQL - Datenbank für das Speichern der Projektinformationen
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
-    networks:
-      - webnet
-
-  # Nginx - Webserver für HTTP-Anfragen
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    networks:
-      - webnet
-
-  # Node.js - API-Server
+  # Node.js API Server
   api:
-    image: node:latest
+    build: .  # Baut das Docker-Image für den Node.js-Service mit dem Dockerfile im aktuellen Verzeichnis
     ports:
       - "3000:3000"
     networks:
-      - webnet
+      - app-network
     depends_on:
-      - mysql
+      - db
 
 networks:
-  webnet:
-    driver: bridge
+  app-network:
+
+volumes:
+  db_data:
